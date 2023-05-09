@@ -1,0 +1,13 @@
+version = 0.1
+[dev]
+[dev.deploy]
+[dev.deploy.parameters]
+stack_name = "chatbot-ai"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-7lxc08636iud"
+s3_prefix = "chatbot-ai"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "Env=\"dev\""
+image_repositories = []
+profile = "tinkin-dev"

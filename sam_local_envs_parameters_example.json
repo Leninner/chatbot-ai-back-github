@@ -1,0 +1,8 @@
+{
+  "Parameters": {
+    "OPENAI_API_KEY": "xxxxxxxx",
+    "POSTGRES_CONNECTION_STRING_SUPABASE": "postgresql://admin:admin@172.25.0.2:5432/postgres",
+    "SUPABASE_URL": "https://xxxxxx.supabase.co",
+    "SUPABASE_KEY": "xxxxxxx"
+  }
+}

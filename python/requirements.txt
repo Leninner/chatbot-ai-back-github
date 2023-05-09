@@ -1,0 +1,9 @@
+# chromadb
+redis
+openai
+langchain
+boto3
+psycopg[binary,pool]
+supabase
+tiktoken
+pexpect

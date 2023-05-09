@@ -1,0 +1,2 @@
+# Imagen base de Python
+FROM public.ecr.aws/sam/build-python3.8:1.79.0-20230407185812

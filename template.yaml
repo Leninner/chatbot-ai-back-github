@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  chatbot-ai
+
+  Sample SAM Template for chatbot-ai
+
+Parameters:
+  Env:
+    Default: dev
+    Type: String
+  PostgresConnectionStringSupabase:
+    Default: "" 
+    Type: String
+  
+Globals:
+  Function:
+    Timeout: 30
+    Environment:
+      Variables:
+        ENVIRONMENT: !Ref Env
+
+Resources:
+  CreateUpdateBotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub create-update-bot-${Env}
+      CodeUri: typescript/
+      Handler: createUpdateBot.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        - src/handlers/createUpdateBot.ts
+  
+  DeleteBotFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub delete-bot-${Env}
+      CodeUri: typescript/
+      Handler: deleteBot.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /bot
+            Method: delete
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        EntryPoints: 
+        - src/handlers/deleteBot.ts
+
+  ChatHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub chat-handler-${Env}
+      CodeUri: python/
+      Handler: chat_handler.handler
+      Runtime: python3.8
+      Environment:
+        Variables:
+          OPENAI_API_KEY: !Sub "{{resolve:ssm:/${Env}/chatbot-ai/openai-api-key}}"
+          POSTGRES_CONNECTION_STRING_SUPABASE: !Sub "{{resolve:ssm:/${Env}/chatbot-ai/postgres-connection-string-supabase}}"
+          SUPABASE_URL: !Sub "{{resolve:ssm:/${Env}/chatbot-ai/supabase-url}}"
+          SUPABASE_KEY: !Sub "{{resolve:ssm:/${Env}/chatbot-ai/supabase-key}}"
+      Architectures:
+        - x86_64
+      Events:
+        ProcessChat:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /chat
+            Method: post
+
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Env
+      Cors:
+        AllowMethods: "'*'"
+        AllowOrigin: "'*'"
+        AllowHeaders: "'*'"
